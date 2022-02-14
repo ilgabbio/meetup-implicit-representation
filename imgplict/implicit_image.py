@@ -1,10 +1,11 @@
-from typing import List, Tuple, Optional
+from typing import Callable, List, Tuple, Optional, Union
 import numpy as np
 import torch
-from torch import Tensor, no_grad
-from torch.nn import Module, Sequential, Linear, ReLU, MSELoss
+from torch import Tensor, no_grad, sin, cos
+from torch.nn import Module, Sequential, Linear, SiLU, MSELoss
 from torch.utils.data import Dataset, DataLoader
 from torch.optim import Adam
+from torch.optim.lr_scheduler import StepLR
 from PIL import Image
 
 
@@ -31,7 +32,8 @@ class Mlp(Sequential):
     def __init__(
         self, 
         layer_sizes: List[int], 
-        activation: Module=ReLU()
+        activation: Module=SiLU(),
+        preprocess: Optional[Callable[[Tensor],Tensor]] = None,
     ) -> None:
         super().__init__(*[
             Sequential(
@@ -40,6 +42,12 @@ class Mlp(Sequential):
             )
             for i in range(1,len(layer_sizes))
         ])
+        self._preprocess = preprocess
+    
+    def forward(self, x: Tensor) -> Tensor:
+        if self._preprocess is not None:
+            x = self._preprocess(x)
+        return super().forward(x)
 
 
 class ImageDataset(Dataset[Tuple[Tensor,Tensor]]):
@@ -61,13 +69,39 @@ class ImageDataset(Dataset[Tuple[Tensor,Tensor]]):
         return value, label
 
 
+class Encoder:
+    def __init__(self, freqs: int = 5, include_coords: bool = True) -> None:
+        super().__init__()
+        self._funcs = [
+            lambda x: func(2**freq * np.pi * x)
+            for func in (sin, cos)
+            for freq in range(freqs) 
+        ]
+        if include_coords:
+            self._funcs = [lambda x: x] + self._funcs
+    
+    def __call__(self, coords) -> Tensor:
+        return torch.hstack((
+            self._encode(coords[:,:1]),
+            self._encode(coords[:,1:]),
+        ))
+    
+    def _encode(self, coords: Tensor) -> Tensor:
+        return torch.hstack(tuple(func(coords) for func in self._funcs))
+    
+    def __len__(self) -> int:
+        return len(self._funcs)*2
+
+
 def train_implicit_image(
     image: np.ndarray,
+    freqs: int = 3,
+    include_coords: int = True,
     layer_size: int = 32,
     num_layers: int = 5,
-    epochs: int = 20,
+    epochs: int = 50,
     batch_size: int = 32,
-    learning_rate: float = 1e-3,
+    learning_rate: float = 2e-3,
     reconstruction_path: Optional[str] = None
 ) -> ImplicitImage:
     data = DataLoader(
@@ -76,9 +110,11 @@ def train_implicit_image(
         shuffle=True,
     )
 
-    model = Mlp([2] + [layer_size]*num_layers + [3])
+    encoder = Encoder(freqs=freqs, include_coords=include_coords)
+    model = Mlp([len(encoder)] + [layer_size]*num_layers + [3], preprocess=encoder)
 
     optimizer = Adam(model.parameters(), lr=learning_rate)
+    scheduler = StepLR(optimizer=optimizer, step_size=10, gamma=0.5)
     loss = MSELoss()
 
     num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -97,6 +133,7 @@ def train_implicit_image(
             error.backward()
             optimizer.step()
 
+        scheduler.step()
         train_error /= len(data)
         print(f"Epoch: {e+1}, error: {train_error}")
 
