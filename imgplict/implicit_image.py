@@ -1,4 +1,4 @@
-from typing import Callable, List, Tuple, Optional, Union
+from typing import Callable, List, Tuple, Optional
 import numpy as np
 import torch
 from torch import Tensor, no_grad, sin, cos
@@ -7,6 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 from torch.optim import Adam
 from torch.optim.lr_scheduler import StepLR
 from PIL import Image
+from math import sqrt
 
 
 class ImplicitImage:
@@ -37,13 +38,28 @@ class Mlp(Sequential):
     ) -> None:
         super().__init__(*[
             Sequential(
-                Linear(layer_sizes[i-1], layer_sizes[i]),
+                self._initialize(
+                    Linear(
+                        layer_sizes[i-1],
+                        layer_sizes[i]
+                    ),
+                    layer_sizes[i-1],
+                    i
+                ),
                 activation
             )
             for i in range(1,len(layer_sizes))
         ])
         self._preprocess = preprocess
     
+    def _initialize(self, layer: Linear, n: int, i: int) -> Linear:
+        if i > 0:
+            layer.weight.data.uniform_(-sqrt(6/n),+sqrt(6/n))
+        else:
+            layer.weight.data.fill_(30)
+        layer.bias.data.fill_(0)
+        return layer
+
     def forward(self, x: Tensor) -> Tensor:
         if self._preprocess is not None:
             x = self._preprocess(x)
@@ -93,6 +109,14 @@ class Encoder:
         return len(self._funcs)*2
 
 
+class Sin(Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x: Tensor) -> Tensor:
+        return sin(x)
+
+
 def train_implicit_image(
     image: np.ndarray,
     freqs: int = 3,
@@ -111,7 +135,11 @@ def train_implicit_image(
     )
 
     encoder = Encoder(freqs=freqs, include_coords=include_coords)
-    model = Mlp([len(encoder)] + [layer_size]*num_layers + [3], preprocess=encoder)
+    model = Mlp(
+        [len(encoder)] + [layer_size]*num_layers + [3],
+        activation=Sin(),
+        preprocess=encoder
+    )
 
     optimizer = Adam(model.parameters(), lr=learning_rate)
     scheduler = StepLR(optimizer=optimizer, step_size=10, gamma=0.5)
