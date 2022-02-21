@@ -80,7 +80,11 @@ What about using sinusoids as activations?
 ---
 # Neural Radiance Fields (NeRF)
 
+<<<<<<< HEAD
 ![width:1000px](https://editor.analyticsvidhya.com/uploads/685123.png)
+=======
+![](https://editor.analyticsvidhya.com/uploads/685123.png)
+>>>>>>> 8392c5e (Pres NERF)
 
 ---
 # NeRF: The model
@@ -191,3 +195,19 @@ $$L(\Theta,p_i)=\sum_i\sum_x\|\hat{I}(x;p_i,\Theta)-I_i(x)\|^2$$
 - positional encoding frequencies are __slowly activated during the training__:
 
 ![](images/BARF_positional.png)
+
+---
+# DNeRF: Managing dynamic scenes
+
+- Let's consider [deformable objects](https://www.albertpumarola.com/images/2021/D-NeRF/teaser2.mp4);
+- encode the deformation in a network.
+
+![width:1200px](https://www.researchgate.net/profile/Gerard-Pons-Moll/publication/346510555/figure/fig1/AS:963908596666371@1606825126402/D-NeRF-Model-The-proposed-architecture-consists-of-two-main-blocks-a-deformation.ppm)
+
+---
+# DNeRF: Time as part of the optimization
+
+- $T(h,t) = \exp\left(-\int_{h_n}^h\sigma(r(s,t))ds\right)$
+- $C(r,t) = \int_{h_n}^{h_f} T(h,t) \sigma(r(h,t)) c(r(h,t)) dh$
+
+Can render a scene from custom viewpoint AND time.
