@@ -80,11 +80,7 @@ What about using sinusoids as activations?
 ---
 # Neural Radiance Fields (NeRF)
 
-<<<<<<< HEAD
 ![width:1000px](https://editor.analyticsvidhya.com/uploads/685123.png)
-=======
-![](https://editor.analyticsvidhya.com/uploads/685123.png)
->>>>>>> 8392c5e (Pres NERF)
 
 ---
 # NeRF: The model
@@ -211,3 +207,39 @@ $$L(\Theta,p_i)=\sum_i\sum_x\|\hat{I}(x;p_i,\Theta)-I_i(x)\|^2$$
 - $C(r,t) = \int_{h_n}^{h_f} T(h,t) \sigma(r(h,t)) c(r(h,t)) dh$
 
 Can render a scene from custom viewpoint AND time.
+
+---
+# NeRF-W: NeRF in the Wild
+
+What to be managed:
+
+- Appearance changes: light, weather, environment.
+- Transient objects: present in the shots, not desired in the scene.
+
+![height:400px](https://miro.medium.com/max/1400/1*nrlXoH_h8-MTq2dwtfKiBw.png)
+
+---
+# NeRF-W: Appearance changes
+
+- Appearance encoded in embeddings.
+- Embeddings randomly initialized.
+- Embeddings optimized with the other quantities:
+$$F_\Theta = F_\Theta(r(x),d(x),l_i)$$
+- The embedding keeps the association to the image.
+
+---
+# NeRF-W: Transient objects
+
+- A new MLP head produces:
+  - a transient object rendering;
+  - a per-image uncertainty field.
+
+![width:600px bg right](https://i.blogs.es/c16156/nerf-mecanismo/450_1000.jpg)
+
+---
+# NeRF-W: Results
+
+- Given views in the wild;
+- [move cameras and appearance](https://youtu.be/mRAKVQj5LRA?t=218).
+
+![bg right width:600px](images/NERF-W.png)
