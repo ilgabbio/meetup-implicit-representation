@@ -156,4 +156,38 @@ Solution: the whole rendering is differentiable:
 - requires many views (~400 in the original paper, at least tens);
 - can model just small environments.
 
+---
+# BARF: Bundle Adjusting Radiance Fields
 
+![width:800px](https://info.deeplearning.ai/hs-fs/hubfs/BARF.gif?width=1200&upscale=true&name=BARF.gif)
+
+[NeRF VS BARF](https://twitter.com/i/status/1382550722672087045)
+
+---
+# BARF: Bundle Adjusting Radiance Fields
+
+NeRF loss:
+
+$$L(\Theta)=\sum_i\sum_x\|\hat{I}(x;p_i,\Theta)-I_i(x)\|^2$$
+
+where:
+
+- $\hat{I}$ is the renderer;
+- $p_i$ is the $i$th camera pose; 
+- $I_i$ is the $i$th image.
+
+---
+# BARF: Bundle Adjusting Radiance Fields
+
+- BARF optimizes the the camera poses too:
+$$L(\Theta,p_i)=\sum_i\sum_x\|\hat{I}(x;p_i,\Theta)-I_i(x)\|^2$$
+- This doesn't work out of the box;
+- gradients leads to wrong updates.
+
+---
+# BARF: Bundle Adjusting Radiance Fields
+
+- Smooth signals are desirable for geometric alignment;
+- positional encoding frequencies are __slowly activated during the training__:
+
+![](images/BARF_positional.png)
