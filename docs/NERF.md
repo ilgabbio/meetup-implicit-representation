@@ -1,7 +1,7 @@
 ---
 marp: true
 ---
-# Implicit representations and NERF
+# Implicit representations and NeRF
 
 ---
 # Implicit representations
@@ -27,11 +27,9 @@ Let's train a neural network representing $I$.
 - Optimizer: Adam
 - Epochs: 50
 
----
-# Implicit representations results
 (see the code)
 
-![](images/result_implicit.png)
+![bg right](images/result_implicit.png)
 
 ---
 # Implicit representations
@@ -48,11 +46,9 @@ Why the reconstruction is bad?
   - map $x \to \{\sin(2^i\pi x), \cos(2^i\pi x)\}_i$;
   - same for $y$, use all $(x,y)$ and their mappings.
 
----
-# Positional encoding results
 (see the code)
 
-![](images/result_positional.png)
+![bg right](images/result_positional.png)
 
 ---
 # SIREN
@@ -70,11 +66,9 @@ What about using sinusoids as activations?
   - Can fit any derivative (including zero).
 - Need careful initialization.
 
----
-# SIREN results
 (see the code)
 
-![](images/result_siren.png)
+![bg right](images/result_siren.png)
 
 ---
 # SIREN
@@ -82,3 +76,84 @@ What about using sinusoids as activations?
 - [1d, 2d, 3d](https://www.vincentsitzmann.com/siren/);
 - fitting [gradient and laplacian](https://miro.medium.com/max/1400/0*l7VjThctJvOGLDsF.png) too;
 - generalizes via [hyper-network](https://pbs.twimg.com/ext_tw_video_thumb/1274121310193348608/pu/img/eLkSoZ4Gr351nsma?format=jpg&name=large).
+
+---
+# Neural Radiance Fields (NeRF)
+
+![width:1000px](https://editor.analyticsvidhya.com/uploads/685123.png)
+
+---
+# NeRF: The model
+
+- MLP as a function $\{\gamma(x),\gamma(d)\}\to\{\sigma,c\}$:
+  - $\gamma(\cdot)$: positional encoding
+  - $x$: 3d voxel position
+  - $d$: optical ray direction
+  - $\sigma$: opacity
+  - $c$: color
+
+---
+# NeRF: The model
+
+![](https://miro.medium.com/max/1129/1*q3fLvJFfoUdtVhsXeeTNXw.png)
+
+---
+# NeRF: Rendering new views
+
+![](https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5e700ef6067b43821ed52768_pipeline_website-01.png)
+
+---
+# NeRF: Rendering new views
+
+- For every target pixel, casts an optical ray $r$.
+- Given a distance $t$, get a 3D position $r(t)$.
+  - You can use the net to compute $\sigma$ and $c$.
+- the transmittance of a ray from the camera to a distance $t$ is:
+  - $T(t) = \exp\left(-\int_{t_n}^t\sigma(r(s))ds\right)$
+- the final color associated to an optical ray $r$ (thus to a pixel) is:
+  - $C(r) = \int_{t_n}^{t_f} T(t) \sigma(r(t)) c(r(t)) dt$
+
+---
+# NeRF: Rendering new views
+
+- Some ablations:
+  - positional encoding;
+  - stratified sampling of $t$ distances;
+  - double network (coarse and fine) for efficiency;
+  - many more...
+- **_Where is the magic?_**
+
+---
+# NeRF: The training
+
+Problems:
+
+- In the dataset we __don't__ have $\sigma$.
+- In the dataset we __don't__ have colors on a per-voxel basis.
+
+---
+# NeRF: The training
+
+Solution: the whole rendering is differentiable:
+
+![](images/NERF_differentiable_rendering.png)
+
+---
+# NeRF: Applications
+
+- [given some frontal images](http://cseweb.ucsd.edu/~viscomp/projects/LF/papers/ECCV20/nerf/website_renders/orchid.mp4)
+- [given 360 images](http://cseweb.ucsd.edu/~viscomp/projects/LF/papers/ECCV20/nerf/website_renders/synth_grid_3.mp4)
+- [synthesizing lighting effects](http://cseweb.ucsd.edu/~viscomp/projects/LF/papers/ECCV20/nerf/website_renders/viewdirs_website_bww.mp4)
+- [estimating the depth](http://cseweb.ucsd.edu/~viscomp/projects/LF/papers/ECCV20/nerf/website_renders/depth_reflower.mp4)
+- [meshing, relighting, ...](https://www.matthewtancik.com/nerf)
+
+---
+# NeRF: Problems
+
+- Requires calibrated cameras (intrinsic/extrinsic parameters);
+- takes days to train, minutes to render;
+- does not support moving scenes;
+- requires many views (~400 in the original paper, at least tens);
+- can model just small environments.
+
+
