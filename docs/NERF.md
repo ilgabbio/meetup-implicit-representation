@@ -332,3 +332,28 @@ Rendering up to 400fps...
 ...depending on the model resolution.
 
 ![bg right height:440px](images/PlenOctrees_times.png)
+
+---
+# PlenOxels
+
+Can PlenOctrees be used to speed-up the training too?
+
+Yes, with some tricks!
+
+![bg right width:600px](https://miro.medium.com/max/971/1*77_K_o0NGw7eH567w57-cQ.jpeg)
+
+---
+# PlenOxels
+
+- Train directly the spherical harmonics (no MLP).
+- Trilinear interpolation reduces the needed density.
+- Sample on a dense grid, then prune and refine (coarse to fine).
+- Total Variation regularizer:
+$$
+\mathcal{L}_{TV} = \frac{1}{\mathcal{V}}
+  \sum_{v\in\mathcal{V}}\sqrt{
+    \Delta_x^2(v,d) + \Delta_y^2(v,d) + \Delta_z^2(v,d)
+  }
+$$
+where $\Delta_x$ is the voxel difference along $x$ direction.
+- Other ablations (lr-scheduling, RMSProp, ...).
