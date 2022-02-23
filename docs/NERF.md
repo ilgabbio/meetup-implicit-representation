@@ -261,3 +261,33 @@ $$F_\Theta = F_\Theta(r(x),d(x),l_i)$$
 # Pixel-NeRF VS NeRF
 
 ![bg right width:700px](https://alexyu.net/pixelnerf/img/teaser/dtu_outputs_sm.gif)
+
+---
+# Block-NeRF
+
+Compose many models.
+Render bigger models.
+
+[Metropolitan-sized models.](https://storage.googleapis.com/waymo-uploads/files/site-media/research/waymo_block_nerf_grace_cathedral.webm)
+
+![bg right width:600px](https://ml8ygptwlcsq.i.optimole.com/fMKjlhs.QRSi~1ce64/w:818/h:514/q:auto/https://www.unite.ai/wp-content/uploads/2022/02/block-nerf-MAIN.jpg)
+
+---
+# Block-NeRF: auto-selection of models
+
+- Given a new camera pose;
+- select the NeRF models;
+- render the images;
+- blend the images.
+
+![bg right](images/block_NERF_selection.png)
+
+---
+# Block-NeRF: auto-adjustments
+
+![](images/block_NERF_adjustment.png)
+
+---
+# Block-NeRF: main NeRF changes
+
+![](images/block_NERF_nets.png)
