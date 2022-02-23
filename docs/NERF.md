@@ -375,3 +375,9 @@ Different [applications](https://nvlabs.github.io/instant-ngp/):
 - Neural Signed Distance Function (SDF);
 - Neural Volume;
 - Neural Radiance Cache.
+
+---
+# Other neural-rendering stuff on...
+# ...[awesome neural-rendering](https://github.com/weihaox/awesome-neural-rendering)!
+
+Thanks for listening.. questions?
