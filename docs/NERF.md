@@ -243,3 +243,21 @@ $$F_\Theta = F_\Theta(r(x),d(x),l_i)$$
 - [move cameras and appearance](https://youtu.be/mRAKVQj5LRA?t=218).
 
 ![bg right width:600px](images/NERF-W.png)
+
+---
+# Pixel-NeRF: NeRF from one or few images
+
+![](https://pbs.twimg.com/media/EoXNF6pW8AA6b47?format=jpg&name=large)
+
+- Backbone: ResNet34, up to pooling 4.
+- Image features as residuals in every layer (see SPADE).
+
+---
+# Pixel-NeRF: Results
+
+![bg right width:600px](https://alexyu.net/pixelnerf/img/gif/shapenet_001.gif)
+
+---
+# Pixel-NeRF VS NeRF
+
+![bg right width:700px](https://alexyu.net/pixelnerf/img/teaser/dtu_outputs_sm.gif)
