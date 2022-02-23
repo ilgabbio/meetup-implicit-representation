@@ -291,3 +291,44 @@ Render bigger models.
 # Block-NeRF: main NeRF changes
 
 ![](images/block_NERF_nets.png)
+
+---
+# PlenOctrees
+
+- Given an already trained NeRF;
+- how to speed-up the novel view rendering?
+
+PlenOctrees 
+
+---
+# NeRF-SH
+
+Instead of colors, let's generate spherical harmonics:
+
+![height:500px](images/spherical_harmonics.png)
+
+---
+# NeRF-SH
+
+The MLP estimates spherical harmonic coefficients:
+
+![](images/NeRF-SH.png)
+
+---
+# PlenOctrees
+
+- Construct an octree structure;
+- compute the voxel harmonic coefficients;
+- render interpolating harmonics;
+- fine-tune the renderer.
+
+![](https://alexyu.net/plenoctrees/img/pipeline.png)
+
+---
+# PlenOctrees: Results
+
+Rendering up to 400fps...
+
+...depending on the model resolution.
+
+![bg right height:440px](images/PlenOctrees_times.png)
