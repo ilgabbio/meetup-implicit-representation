@@ -357,3 +357,21 @@ $$
 $$
 where $\Delta_x$ is the voxel difference along $x$ direction.
 - Other ablations (lr-scheduling, RMSProp, ...).
+
+---
+# Multi-resolution Hash Encoding
+
+NVIDIA: Spatial hashing kernel for faster lookup:
+
+![](images/InstantHash.png)
+
+---
+# Multi-resolution Hash Encoding
+
+Different [applications](https://nvlabs.github.io/instant-ngp/):
+
+- super-resolution (Gigapixel Images);
+- Neural Radiance Fields;
+- Neural Signed Distance Function (SDF);
+- Neural Volume;
+- Neural Radiance Cache.
